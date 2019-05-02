@@ -6,8 +6,8 @@ try:
 except ImportError:
     imap=map
 
-string = "AB"
-length = "5"
+string = sys.argv[1]
+length = sys.argv[2]
 
 file = open("word-list.txt","w+")
 a = []
