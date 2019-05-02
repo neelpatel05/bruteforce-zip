@@ -4,13 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"github.com/yeka/zip"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
-	"github.com/yeka/zip"
 	"time"
 )
 
@@ -41,7 +41,7 @@ func bruteforce(filename string, reader *bufio.Reader) {
 	fmt.Println("Total words: ",len(wordlist))
 	fmt.Println("-----------------------------")
 
-	fmt.Print("$: Enter the string: ")
+	fmt.Print("$: Enter the filename: ")
 	filename1, err := reader.ReadString('\n')
 	filename1 = strings.TrimSpace(filename1)
 	if err!=nil {
@@ -50,19 +50,30 @@ func bruteforce(filename string, reader *bufio.Reader) {
 
 	status := false
 	t1 := time.Now()
-	for _, password := range wordlist {
+	for index, password := range wordlist {
 		status = unzip(filename1, password)
-		fmt.Println("Password - ",password,"Status - ",status)
+		t2 := time.Now()
+		fmt.Println("Password - ",password," | Status - ",status,"| Password left - ",len(wordlist)-index+1)
 		if status {
-			t2 := time.Now()
+			fmt.Println("-----------------------------------")
 			fmt.Println("Password is - ",password)
 			fmt.Println("Total time taken - ",t2.Sub(t1))
+			fmt.Println("-----------------------------------")
 			break
 		}
+	}
+	t2 := time.Now()
+	if !status {
+		fmt.Println("-----------------------------------")
+		fmt.Println("Password is - Not found")
+		fmt.Println("Total time taken - ",t2.Sub(t1))
+		fmt.Println("-----------------------------------")
 	}
 }
 
 func unzip(filename string, password string) bool {
+	defer cleanup()
+
 	zipfile, err := zip.OpenReader(filename)
 	if err!=nil {
 		fmt.Println("here")
@@ -117,12 +128,12 @@ func two(reader *bufio.Reader) {
 	defer cleanup()
 
 	fmt.Println("$: Enter the filename")
-	_, err := reader.ReadString('\n')
+	filename, err := reader.ReadString('\n')
 	if err!=nil {
 		panic(err.Error())
 	}
+	filename = strings.TrimSpace(filename)
 
-	filename := "word-list.txt"
 	bruteforce(filename, reader)
 }
 
