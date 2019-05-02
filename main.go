@@ -121,6 +121,9 @@ func two(reader *bufio.Reader) {
 	if err!=nil {
 		panic(err.Error())
 	}
+
+	filename := "word-list.txt"
+	bruteforce(filename, reader)
 }
 
 func main() {
@@ -129,7 +132,7 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
-		fmt.Print("$: 1. Create wordlist and attack 2. Use own wordlist and attact 3. Exit - press Ctrl + c $: ")
+		fmt.Print("$: 1. Create wordlist and attack 2. Use own wordlist and attack 3. Exit - press Ctrl + c $: ")
 		choice, err := reader.ReadString('\n')
 		if err!=nil {
 			panic(err.Error())
