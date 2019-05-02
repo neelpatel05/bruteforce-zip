@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"strings"
 	"github.com/yeka/zip"
+	"time"
 )
 
 func cleanup() {
@@ -48,14 +49,17 @@ func bruteforce(filename string, reader *bufio.Reader) {
 	}
 
 	status := false
+	t1 := time.Now()
 	for _, password := range wordlist {
 		status = unzip(filename1, password)
+		fmt.Println("Password - ",password,"Status - ",status)
 		if status {
-			fmt.Println(password)
+			t2 := time.Now()
+			fmt.Println("Password is - ",password)
+			fmt.Println("Total time taken - ",t2.Sub(t1))
 			break
 		}
 	}
-	fmt.Println(status)
 }
 
 func unzip(filename string, password string) bool {
