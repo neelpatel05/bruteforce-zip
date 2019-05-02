@@ -14,4 +14,3 @@ a = []
 for i in imap(''.join, itertools.product(string, repeat=int(length))):
     a.append(i+"\n")
 file.writelines(a)
-print(len(a))
