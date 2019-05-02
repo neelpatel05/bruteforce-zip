@@ -2,13 +2,15 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
-	"github.com/alexmullins/zip"
+	"github.com/yeka/zip"
 )
 
 func cleanup() {
@@ -17,7 +19,7 @@ func cleanup() {
 	}
 }
 
-func bruteforce(filename string) {
+func bruteforce(filename string, reader *bufio.Reader) {
 	defer cleanup()
 
 	file, err := os.Open(filename)
@@ -38,30 +40,44 @@ func bruteforce(filename string) {
 	fmt.Println("Total words: ",len(wordlist))
 	fmt.Println("-----------------------------")
 
-	outfolder := filename
+	fmt.Print("$: Enter the string: ")
+	filename1, err := reader.ReadString('\n')
+	filename1 = strings.TrimSpace(filename1)
+	if err!=nil {
+		panic(err.Error())
+	}
+
 	status := false
 	for _, password := range wordlist {
-		status = unzip(filename, password, outfolder)
+		status = unzip(filename1, password)
+		if status {
+			fmt.Println(password)
+			break
+		}
 	}
-	if status {
-		fmt.Println(status)
-	}
+	fmt.Println(status)
 }
 
-func unzip(filename string, password string, outfolder string) bool {
-
+func unzip(filename string, password string) bool {
 	zipfile, err := zip.OpenReader(filename)
 	if err!=nil {
+		fmt.Println("here")
 		panic(err.Error())
 	}
 	defer  zipfile.Close()
 
+	buffer := new(bytes.Buffer)
 	for _, x := range zipfile.File {
 		x.SetPassword(password)
-		_, err := x.Open()
-		if err!=nil {
+		r, err := x.Open()
+		if err!=nil{
 			return false
 		}
+		n, err := io.Copy(buffer, r)
+		if n == 0 || err != nil {
+			return false
+		}
+		break
 	}
 	return true
 }
@@ -90,7 +106,7 @@ func one(reader *bufio.Reader) {
 	}
 
 	filename := "word-list.txt"
-	bruteforce(filename)
+	bruteforce(filename, reader)
 }
 
 func two(reader *bufio.Reader) {
