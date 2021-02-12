@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/yeka/zip"
+	"github.com/alexmullins/zip"
 	"io"
 	"io/ioutil"
 	"log"
